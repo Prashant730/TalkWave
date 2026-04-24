@@ -27,17 +27,10 @@ A full-stack real-time chat application built with React, Node.js, Socket.IO, an
 
 - **Real-time messaging** via Socket.IO
 - **Direct conversations** between users
-- **Group channels** (public & private)
-- **Message reactions** with emoji
 - **Reply to messages** (threaded replies)
-- **Pin messages** in channels (admin/owner only)
 - **File & image uploads** via Cloudinary
 - **User authentication** — JWT + Refresh tokens + Google OAuth
-- **OTP email verification** via Nodemailer
-- **Push notifications** via Firebase Cloud Messaging
-- **Admin dashboard** for user management
 - **Rate limiting** and security headers via Helmet
-- **Error tracking** via Sentry (optional)
 - **WhatsApp-style UI** — dark theme, bubble alignment, pill input
 
 ---
