@@ -188,9 +188,8 @@ talkwave/
 - **MongoDB** (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
 - **npm** or **yarn**
 - A **Cloudinary** account (for file uploads)
-- A **Gmail** account with App Password (for OTP emails)
+- A **Gmail** account with App Password
 - A **Google Cloud** project (for OAuth — optional)
-- A **Firebase** project (for push notifications — optional)
 
 ---
 
