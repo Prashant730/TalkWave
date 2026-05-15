@@ -81,108 +81,190 @@ A full-stack real-time chat application built with React, Node.js, Socket.IO, an
 
 ## Project Structure
 
+### Backend
+
 ```
-talkwave/
-├── talkwave-backend/
-│   ├── server.js                  # Entry point
-│   ├── .env                       # Environment variables
-│   └── src/
-│       ├── config/
-│       │   ├── db.js              # MongoDB connection
-│       │   ├── cloudinary.js      # Cloudinary setup
-│       │   ├── firebase.js        # Firebase Admin setup
-│       │   └── passport.js        # Google OAuth config
-│       ├── controllers/
-│       │   ├── authController.js
-│       │   ├── channelController.js
-│       │   ├── conversationController.js
-│       │   ├── messageController.js
-│       │   └── userController.js
-│       ├── middleware/
-│       │   ├── auth.js            # JWT verification
-│       │   ├── checkChannelRole.js
-│       │   ├── errorHandler.js
-│       │   ├── rateLimiter.js
-│       │   ├── requireAdmin.js
-│       │   └── validateObjectId.js
-│       ├── models/
-│       │   ├── AuditLog.js
-│       │   ├── Channel.js
-│       │   ├── Conversation.js
-│       │   ├── Message.js
-│       │   ├── Notification.js
-│       │   └── User.js
-│       ├── routes/
-│       │   ├── auth.js
-│       │   ├── channels.js
-│       │   ├── conversations.js
-│       │   ├── messages.js
-│       │   ├── upload.js
-│       │   └── users.js
-│       ├── services/
-│       │   ├── emailService.js
-│       │   └── notificationService.js
-│       ├── socket/
-│       │   └── index.js           # Socket.IO event handlers
-│       └── utils/
-│           ├── apiResponse.js
-│           └── generateToken.js
-│
-└── talkwave-frontend/
-    ├── index.html
-    ├── vite.config.js
-    ├── tailwind.config.js
-    └── src/
-        ├── App.jsx                # Routes definition
-        ├── main.jsx               # React entry point
-        ├── index.css              # Global styles
-        ├── api/
-        │   └── axios.js           # Axios instance with interceptors
-        ├── components/
-        │   ├── layout/
-        │   │   ├── SidebarNew.jsx # Conversations & channels list
-        │   │   ├── ChatAreaNew.jsx# Main chat area
-        │   │   └── InfoPanel.jsx  # Contact/channel info panel
-        │   ├── chat/
-        │   │   ├── MessageBubbleNew.jsx  # WhatsApp-style message bubble
-        │   │   ├── MessageInputNew.jsx   # Pill-shaped message input
-        │   │   ├── ConversationHeader.jsx
-        │   │   └── TypingIndicator.jsx
-        │   ├── channels/
-        │   │   ├── ChannelView.jsx
-        │   │   ├── ChannelList.jsx
-        │   │   ├── ChannelHeader.jsx
-        │   │   ├── ChannelMembersPanel.jsx
-        │   │   └── PinnedMessagesPanel.jsx
-        │   ├── modals/
-        │   │   ├── NewChatModal.jsx
-        │   │   └── CreateChannelModal.jsx
-        │   └── common/
-        │       ├── ProtectedRoute.jsx
-        │       ├── Spinner.jsx
-        │       └── Badge.jsx
-        ├── hooks/
-        │   ├── useAuth.js
-        │   ├── useSocket.js
-        │   └── useOnlineStatus.js
-        ├── pages/
-        │   ├── Login.jsx
-        │   ├── Register.jsx
-        │   ├── Chat.jsx
-        │   ├── Profile.jsx
-        │   ├── Admin.jsx
-        │   └── NotFound.jsx
-        ├── store/
-        │   ├── index.js           # Redux store + persist config
-        │   ├── authSlice.js
-        │   ├── chatSlice.js
-        │   ├── channelSlice.js
-        │   ├── notificationSlice.js
-        │   └── uiSlice.js
-        └── utils/
-            ├── constants.js
-            ├── formatTime.js
-            └── validators.js
+talkwave-backend/
+├── server.js                  # Entry point — Express + Socket.IO + DB init
+├── .env                       # Environment variables
+└── src/
+    ├── config/
+    │   ├── db.js              # MongoDB connection
+    │   ├── cloudinary.js      # Cloudinary setup
+    │   ├── firebase.js        # Firebase Admin setup
+    │   └── passport.js        # Google OAuth config
+    ├── controllers/
+    │   ├── authController.js
+    │   ├── channelController.js
+    │   ├── conversationController.js
+    │   ├── messageController.js
+    │   └── userController.js
+    ├── middleware/
+    │   ├── auth.js            # JWT verification
+    │   ├── checkChannelRole.js
+    │   ├── errorHandler.js
+    │   ├── rateLimiter.js
+    │   ├── requireAdmin.js
+    │   └── validateObjectId.js
+    ├── models/
+    │   ├── AuditLog.js
+    │   ├── Channel.js
+    │   ├── Conversation.js
+    │   ├── Message.js
+    │   ├── Notification.js
+    │   └── User.js
+    ├── routes/
+    │   ├── auth.js
+    │   ├── channels.js
+    │   ├── conversations.js
+    │   ├── messages.js
+    │   ├── upload.js
+    │   └── users.js
+    ├── services/
+    │   ├── emailService.js
+    │   └── notificationService.js
+    ├── socket/
+    │   └── index.js           # All Socket.IO event handlers
+    └── utils/
+        ├── apiResponse.js
+        └── generateToken.js
+```
+
+---
+
+### Frontend — React Component Tree
+
+```
+main.jsx
+└── <Provider store={store}>          (Redux store + redux-persist)
+    └── <PersistGate>
+        └── <App />                   (React Router)
+            ├── /login        → <Login />
+            ├── /register     → <Register />
+            ├── /404          → <NotFound />
+            └── /chat  (ProtectedRoute)
+                └── <Chat />
+                    ├── <SidebarNew />
+                    │   ├── Tab: Direct
+                    │   │   ├── Search bar
+                    │   │   ├── [New Conversation button]
+                    │   │   │   └── <NewChatModal />
+                    │   │   └── Conversation list items
+                    │   │       └── Avatar + Name + Timestamp
+                    │   ├── Tab: Channels
+                    │   │   └── Channel list items
+                    │   │       └── Hash icon + Name + Timestamp
+                    │   └── Current user footer (Avatar + Name)
+                    │
+                    ├── <ChatAreaNew />
+                    │   ├── <ConversationHeader />
+                    │   │   └── Avatar + Name + Action icons
+                    │   │       (Phone, Video, Search, More)
+                    │   ├── Message list (scrollable)
+                    │   │   └── <MessageBubbleNew />  (per message)
+                    │   │       ├── Sender name (received only)
+                    │   │       ├── Reply quote (if replyTo)
+                    │   │       ├── Message text
+                    │   │       ├── Timestamp + Read receipts
+                    │   │       └── Emoji reactions
+                    │   └── <MessageInputNew />
+                    │       ├── Emoji picker button
+                    │       ├── Attachment button
+                    │       ├── Pill-shaped textarea
+                    │       └── Circular send button
+                    │
+                    └── <InfoPanel />
+                        ├── Avatar + Name + Status
+                        ├── About / Description section
+                        ├── Email (DM only)
+                        ├── Member count (channel only)
+                        ├── Shared media grid (images/files)
+                        ├── [Block Contact] button (DM only)
+                        └── [Clear Chat / Leave Channel] button
+```
+
+### Frontend — State Management (Redux Slices)
+
+```
+store/
+├── authSlice       user, token, refreshToken, isAuthenticated
+├── chatSlice       conversations[], activeConversationId, messages{}
+├── channelSlice    channels[], activeChannelId, messages{}
+├── notificationSlice  notifications[], unreadCount
+└── uiSlice         modals, sidebar state, theme
+```
+
+### Frontend — Custom Hooks
+
+```
+hooks/
+├── useAuth.js          Reads auth state, exposes logout helper
+├── useSocket.js        Manages Socket.IO connection with JWT auth
+└── useOnlineStatus.js  Tracks user online/offline presence
+```
+
+### Frontend — File Structure
+
+```
+talkwave-frontend/
+├── index.html
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+└── src/
+    ├── App.jsx                # Route definitions
+    ├── main.jsx               # React + Redux entry point
+    ├── index.css              # Global styles + Tailwind imports
+    ├── api/
+    │   └── axios.js           # Axios instance with auth interceptors
+    ├── components/
+    │   ├── layout/
+    │   │   ├── SidebarNew.jsx
+    │   │   ├── ChatAreaNew.jsx
+    │   │   └── InfoPanel.jsx
+    │   ├── chat/
+    │   │   ├── MessageBubbleNew.jsx
+    │   │   ├── MessageInputNew.jsx
+    │   │   ├── ConversationHeader.jsx
+    │   │   ├── MessageThread.jsx
+    │   │   ├── FileUpload.jsx
+    │   │   └── TypingIndicator.jsx
+    │   ├── channels/
+    │   │   ├── ChannelView.jsx
+    │   │   ├── ChannelList.jsx
+    │   │   ├── ChannelHeader.jsx
+    │   │   ├── ChannelMembersPanel.jsx
+    │   │   └── PinnedMessagesPanel.jsx
+    │   ├── modals/
+    │   │   ├── NewChatModal.jsx
+    │   │   └── CreateChannelModal.jsx
+    │   └── common/
+    │       ├── ProtectedRoute.jsx
+    │       ├── Spinner.jsx
+    │       ├── Avatar.jsx
+    │       └── Badge.jsx
+    ├── hooks/
+    │   ├── useAuth.js
+    │   ├── useSocket.js
+    │   └── useOnlineStatus.js
+    ├── pages/
+    │   ├── Login.jsx
+    │   ├── Register.jsx
+    │   ├── Chat.jsx
+    │   ├── Profile.jsx
+    │   ├── Admin.jsx
+    │   └── NotFound.jsx
+    ├── store/
+    │   ├── index.js
+    │   ├── authSlice.js
+    │   ├── chatSlice.js
+    │   ├── channelSlice.js
+    │   ├── notificationSlice.js
+    │   └── uiSlice.js
+    └── utils/
+        ├── constants.js
+        ├── formatTime.js
+        └── validators.js
 ```
 
 ---
